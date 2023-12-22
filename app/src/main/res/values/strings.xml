@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">Spotify</string>
+    <string name="good_morning">Good\nMorning moods ✨</string>
+    <string name="romance">Romance</string>
+    <string name="feel_good">Feel Good</string>
+    <string name="podcast">Podcast</string>
+    <string name="popular_today">Popular Today</string>
+
+
+    <integer-array name="data_photo">
+        <item>@drawable/taylor</item>
+        <item>@drawable/bruno</item>
+        <item>@drawable/adele</item>
+        <item>@drawable/theweeknd</item>
+        <item>@drawable/lana</item>
+        <item>@drawable/ariana</item>
+    </integer-array>
+
+    <string-array name="data_penyanyi">
+        <item>Taylor Swift</item>
+        <item>Bruno Mars</item>
+        <item>Adele</item>
+        <item>The Weeknd</item>
+        <item>Lana Del Rey </item>
+        <item>Ariana Grande</item>
+    </string-array>
+
+</resources>
