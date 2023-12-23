@@ -1,173 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#1E1E1E">
+    android:background="#151515"
+    tools:context=".MainActivity">
 
-    <!-- TODO: Update blank fragment layout -->
-    <ScrollView
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_nav"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:background="@drawable/blur_background"
+        app:menu="@menu/bottom_nav_menu"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+
+    <fragment
+        android:id="@+id/nav_host_fragment"
+        android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:layout_editor_absoluteX="1dp"
-        tools:layout_editor_absoluteY="1dp"
-        tools:ignore="MissingConstraints">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+        app:navGraph = "@navigation/mobile_navigation"
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/header"
-                android:orientation="vertical" >
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
-                <TextView
-                    android:id="@+id/welcome"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="26dp"
-                    android:layout_marginTop="26dp"
-                    android:text="@string/good_morning"
-                    android:fontFamily="@font/inter_bold"
-                    android:textColor="@color/white"
-                    android:textSize="25sp"/>
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignTop="@+id/welcome"
-                    android:layout_centerVertical="true"
-                    android:layout_toEndOf="@+id/welcome"
-                    android:layout_marginStart="60dp"
-                    android:src="@drawable/profile"/>
-
-                <HorizontalScrollView
-                    android:id="@+id/category"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/welcome"
-                    android:layout_marginTop="20dp">
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginEnd="26dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/romance"
-                            android:fontFamily="@font/inter_light"
-                            android:layout_marginStart="20dp"
-                            android:background="@drawable/bg_text"
-                            android:paddingHorizontal="10dp"
-                            android:paddingVertical="8dp"
-                            android:textColor="@color/white"
-                            android:gravity="center"
-                            android:padding="10dp"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/feel_good"
-                            android:fontFamily="@font/inter_light"
-                            android:layout_marginStart="10dp"
-                            android:background="@drawable/bg_text"
-                            android:paddingHorizontal="10dp"
-                            android:paddingVertical="8dp"
-                            android:textColor="@color/white"
-                            android:gravity="center"
-                            android:padding="10dp"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/podcast"
-                            android:fontFamily="@font/inter_light"
-                            android:layout_marginStart="10dp"
-                            android:background="@drawable/bg_text"
-                            android:paddingHorizontal="10dp"
-                            android:paddingVertical="8dp"
-                            android:textColor="@color/white"
-                            android:gravity="center"
-                            android:padding="10dp"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:background="@drawable/bg_text"
-                            android:gravity="center"
-                            android:padding="10dp"
-                            android:paddingHorizontal="10dp"
-                            android:paddingVertical="8dp"
-                            android:text="@string/feel_good"
-                            android:fontFamily="@font/inter_light"
-                            android:textColor="@color/white" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/feel_good"
-                            android:fontFamily="@font/inter_light"
-                            android:layout_marginStart="10dp"
-                            android:background="@drawable/bg_text"
-                            android:paddingHorizontal="10dp"
-                            android:paddingVertical="8dp"
-                            android:textColor="@color/white"
-                            android:gravity="center"
-                            android:padding="10dp"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/feel_good"
-                            android:fontFamily="@font/inter_light"
-                            android:layout_marginStart="10dp"
-                            android:background="@drawable/bg_text"
-                            android:paddingHorizontal="10dp"
-                            android:paddingVertical="8dp"
-                            android:textColor="@color/white"
-                            android:gravity="center"
-                            android:layout_marginEnd="26dp"
-                            android:padding="10dp"/>
-
-                    </LinearLayout>
-                </HorizontalScrollView>
-
-                <TextView
-                    android:id="@+id/popular"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/category"
-                    android:fontFamily="@font/inter_bold"
-                    android:text="@string/popular_today"
-                    android:layout_marginStart="26dp"
-                    android:layout_marginTop="20dp"
-                    android:textColor="@color/white"
-                    android:textSize="25sp" />
-            </RelativeLayout>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_popular"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                app:layout_constraintTop_toBottomOf="@id/header"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:layout_marginStart="26dp"
-                android:layout_marginEnd="26dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="20dp"
-                card_view:cardCornerRadius="16dp"/>
-        </LinearLayout>
-    </ScrollView>
-
-</FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

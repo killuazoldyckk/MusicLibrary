@@ -1,57 +1,48 @@
 package com.example.spotify
 
+import android.content.res.ColorStateList
+import android.graphics.drawable.Drawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.navigation.findNavController
+import androidx.navigation.ui.setupWithNavController
+import com.example.spotify.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var rvpopular: RecyclerView
-    private val list = ArrayList<Popular>()
+    private lateinit var binding : ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        // Inisialisasi RecyclerView
-        rvpopular = findViewById(R.id.rv_popular)
-        rvpopular.setHasFixedSize(true)
+        val navController = findNavController(R.id.nav_host_fragment)
 
-        // Mengisi data ke dalam list
-        list.addAll(getListPopular())
-        val layoutManager = GridLayoutManager(this, 2) // Set 2 columns
-        layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-            override fun getSpanSize(position: Int): Int {
-                // Set span size 2 for Taylor Swift and Bruno Mars, and 1 for others
-                return if (position == 9 || position == 6) 2 else 1
-            }
-        }
-        rvpopular.layoutManager = layoutManager
+        binding.bottomNav.setupWithNavController(navController)
 
-        val popularAdapter = PopularAdapter(list)
-        rvpopular.adapter = popularAdapter
+        // Set up icon tint color programmatically
+        val iconColorStateList = ColorStateList(
+            arrayOf(
+                intArrayOf(android.R.attr.state_checked),
+                intArrayOf(-android.R.attr.state_checked)
+            ),
+            intArrayOf(
+                ContextCompat.getColor(this, R.color.selected_icon_color),
+                ContextCompat.getColor(this, R.color.default_icon_color)
+            )
+        )
 
+        binding.bottomNav.itemIconTintList = iconColorStateList
+        binding.bottomNav.itemTextColor = iconColorStateList
+
+        // Set up item background programmatically
+        val unselectedBackground: Drawable? =
+            ContextCompat.getDrawable(this, R.drawable.nav_item_unselected_item)
+        ViewCompat.setBackground(binding.bottomNav, unselectedBackground)
 
 
     }
 
-
-
-
-    private fun getListPopular(): ArrayList<Popular> {
-        val dataPenyanyi = resources.getStringArray(R.array.data_penyanyi)
-        val dataPhoto = resources.obtainTypedArray(R.array.data_photo)
-        val listPopular = ArrayList<Popular>()
-
-        for (i in 0 until dataPhoto.length()) {
-            val popular = Popular(dataPenyanyi[i], dataPhoto.getResourceId(i, -1))
-            listPopular.add(popular)
-        }
-        dataPhoto.recycle()
-        return listPopular
-    }
 }

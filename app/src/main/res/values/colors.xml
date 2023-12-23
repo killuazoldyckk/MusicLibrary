@@ -8,5 +8,9 @@
     <color name="redpink">#7B1428</color>
     <color name="red">#902905</color>
     <color name="purple">#675E73</color>
+    <color name="selected_icon_color">#00c2ff</color>
+    <color name="default_icon_color">#ffffff</color>
+
+
 
 </resources>

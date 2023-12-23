@@ -5,6 +5,9 @@
     <string name="feel_good">Feel Good</string>
     <string name="podcast">Podcast</string>
     <string name="popular_today">Popular Today</string>
+    <string name="home">Home</string>
+    <string name="explore">Explore</string>
+    <string name="your_library">Your Library</string>
 
 
     <integer-array name="data_photo">
