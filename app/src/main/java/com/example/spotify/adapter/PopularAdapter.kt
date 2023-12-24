@@ -1,53 +1,45 @@
 // PopularAdapter.kt
 package com.example.spotify.adapter
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
-import com.example.spotify.api.DataItem
-import com.example.spotify.databinding.ItemCardviewBinding
+import com.example.spotify.R
 
-class PopularAdapter(private var listPopular: List<DataItem>) :
-    RecyclerView.Adapter<PopularAdapter.ListViewHolder>() {
+class PopularAdapter(private val listPopular: ArrayList<Popular>) : RecyclerView.Adapter<PopularAdapter.ListViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListViewHolder {
-        val binding = ItemCardviewBinding.inflate(
-            LayoutInflater.from(parent.context),
-            parent,
-            false
-        )
-        return ListViewHolder(binding)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_cardview, parent, false)
+        return ListViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ListViewHolder, position: Int) {
         val popular = listPopular[position]
-        holder.bind(popular)
+
+        Glide.with(holder.itemView)
+            .load(popular.photoUrl)
+            .override(170, 170)
+            .into(holder.imageView1)
+
+
+
+        holder.textView1.text = popular.name
     }
 
     override fun getItemCount(): Int = listPopular.size
 
-    fun setData(newList: List<DataItem>) {
-        listPopular = newList
-        notifyDataSetChanged()
+    fun setData(newList: List<Popular>) {
+        listPopular.clear()
+        listPopular.addAll(newList)
     }
 
-    inner class ListViewHolder(private val binding: ItemCardviewBinding) :
-        RecyclerView.ViewHolder(binding.root) {
-
-        fun bind(popular: DataItem) {
-            with(binding) {
-                // Load image using Glide
-                Glide.with(itemView.context)
-                    .load(popular.pictureSmall)
-                    .apply(RequestOptions.centerCropTransform())
-                    .into(imageView)
-
-                // Set the name
-                textView.text = popular.name
-            }
-        }
+    class ListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val imageView1: ImageView = itemView.findViewById(R.id.imageView)
+        val textView1: TextView = itemView.findViewById(R.id.textView)
     }
 }
