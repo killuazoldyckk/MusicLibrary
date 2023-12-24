@@ -33,15 +33,11 @@ class HomeFragment : Fragment() {
 
 // Initialize RecyclerView
         rvpopular = binding.rvPopular
-        rvpopular.setHasFixedSize(true)
+//        rvpopular.setHasFixedSize(true)
 
         // Set up RecyclerView layout manager
         val layoutManager = GridLayoutManager(requireContext(), 2)
-        layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-            override fun getSpanSize(position: Int): Int {
-                return if (position == 9 || position == 6) 2 else 1
-            }
-        }
+
         rvpopular.layoutManager = layoutManager
 
         // Set up RecyclerView adapter
@@ -98,36 +94,4 @@ class HomeFragment : Fragment() {
         return url ?: ""
     }
 
-//    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-//        super.onViewCreated(view, savedInstanceState)
-//
-//        setupRecyclerView()
-//
-//        // Fetch data using your API
-//        lifecycleScope.launch {
-//            val data = fetchData()
-//            (binding.rvPopular.adapter as? PopularAdapter)?.setData(data)
-//        }
-//    }
-//
-//    private suspend fun fetchData(): List<DataItem> {
-//        return withContext(Dispatchers.IO) {
-//            // Make API call using Retrofit or any other networking library
-//            val response = ApiConfig.getApiService().getTop50Artist().execute()
-//            if (response.isSuccessful) {
-//                response.body() ?: emptyList()
-//            } else {
-//                emptyList()
-//            }
-//        }
-//    }
-//
-//    private fun setupRecyclerView() {
-//        val layoutManager = GridLayoutManager(requireContext(), 2)
-//        binding.rvPopular.layoutManager = layoutManager
-//
-//        // Set up the adapter
-//        val adapter = PopularAdapter(emptyList()) // Pass an empty list initially
-//        binding.rvPopular.adapter = adapter
-//    }
 }

@@ -23,7 +23,6 @@ class PopularAdapter(private val listPopular: ArrayList<Popular>) : RecyclerView
 
         Glide.with(holder.itemView)
             .load(popular.photoUrl)
-            .override(170, 170)
             .into(holder.imageView1)
 
 
