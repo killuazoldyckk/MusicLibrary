@@ -17,9 +17,10 @@ import com.example.spotify.adapter.SongAdapter
 import com.example.spotify.api.ApiConfig
 import com.example.spotify.api.ContributorsItem
 import com.example.spotify.api.TopSongsResponse
+import com.example.spotify.database.FavouriteSong
+import com.example.spotify.database.FavouriteSongDao
 
 import com.example.spotify.databinding.FragmentSongBinding
-import com.google.android.material.imageview.ShapeableImageView
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -30,6 +31,7 @@ class SongFragment : Fragment(),SongAdapter.OnFavoriteClickListener {
     private lateinit var binding : FragmentSongBinding
     private lateinit var songRv: RecyclerView
     private lateinit var songAdapter: SongAdapter
+    private lateinit var favouriteSongDao: FavouriteSongDao
     private val listSong = ArrayList<Song>()
 
     override fun onCreateView(
@@ -152,6 +154,31 @@ class SongFragment : Fragment(),SongAdapter.OnFavoriteClickListener {
         val song = listSong[position]
         song.isFavorite = !song.isFavorite
         songAdapter.notifyItemChanged(position)
+
+        saveToFavoriteDatabase(song)
+
+    }
+
+    private fun saveToFavoriteDatabase(song: Song) {
+        // Convert contributors List to a comma-separated string for simplicity
+        val contributors = song.contributors.joinToString(", ")
+
+        // Create a FavouriteSong entity
+        val favouriteSong = FavouriteSong(
+            songName = song.songName,
+            albumCover = song.albumCover,
+            contributors = contributors,
+            favourite = song.isFavorite
+        )
+
+        // Save to the FavouriteSong database using FavouriteSongDao
+        saveToFavoriteDatabase(favouriteSong)
+
+    }
+
+    private fun saveToFavoriteDatabase(favouriteSong: FavouriteSong) {
+        // Use favouriteSongDao to perform the insert operation
+        favouriteSongDao.insert(favouriteSong)
     }
 
 

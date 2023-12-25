@@ -1,4 +1,4 @@
-package com.example.spotify
+package com.example.spotify.ui.main
 
 import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
+import com.example.spotify.R
 import com.example.spotify.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
