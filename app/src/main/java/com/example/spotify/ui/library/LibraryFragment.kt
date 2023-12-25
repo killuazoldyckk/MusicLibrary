@@ -31,7 +31,7 @@ class LibraryFragment : Fragment() {
         val repository = FavouriteSongRepository(application)
 
         // Use the existing ViewModelFactory
-        viewModelFactory = ViewModelFactory.getInstance(requireNotNull(this.activity).application)
+        viewModelFactory = ViewModelFactory.getInstance(requireNotNull(this.activity).application,repository)
         viewModel = ViewModelProvider(this, viewModelFactory).get(LibraryViewModel::class.java)
 
         setupRecyclerView()
