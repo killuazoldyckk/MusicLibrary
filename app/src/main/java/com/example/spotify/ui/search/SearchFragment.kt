@@ -150,3 +150,4 @@ class SearchFragment : Fragment() {
         findNavController().navigate(R.id.navigation_song, bundle)
     }
 }
+

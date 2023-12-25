@@ -8,6 +8,7 @@
     <string name="home">Home</string>
     <string name="explore">Explore</string>
     <string name="your_library">Your Library</string>
+    <string name="search">Search</string>
 
 
     <integer-array name="data_photo">

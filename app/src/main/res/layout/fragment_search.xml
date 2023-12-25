@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#1E1E1E"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.search.SearchFragment">
 
@@ -29,7 +28,7 @@
                 android:layout_marginStart="26dp"
                 android:layout_marginTop="26dp"
                 android:fontFamily="@font/inter_bold"
-                android:text="Search"
+                android:text="@string/search"
                 android:textColor="@color/white"
                 android:textSize="25sp" />
 
