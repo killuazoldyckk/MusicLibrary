@@ -23,4 +23,10 @@
         android:label="Library"
         tools:layout="@layout/fragment_library"/>
 
+    <fragment
+        android:id="@+id/navigation_song"
+        android:name="com.example.spotify.ui.home.SongFragment"
+        android:label="Song"
+        tools:layout="@layout/fragment_song"/>
+
 </navigation>

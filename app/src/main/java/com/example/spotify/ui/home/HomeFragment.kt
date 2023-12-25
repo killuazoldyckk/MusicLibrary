@@ -7,8 +7,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.spotify.R
 import com.example.spotify.adapter.Popular
 import com.example.spotify.adapter.PopularAdapter
 import com.example.spotify.api.ApiConfig
@@ -21,7 +23,7 @@ import retrofit2.Response
 
 class HomeFragment : Fragment() {
 
-    private lateinit var binding: FragmentHomeBinding
+    private lateinit var binding : FragmentHomeBinding
     private lateinit var rvpopular: RecyclerView
     private lateinit var popularAdapter: PopularAdapter
 
@@ -31,9 +33,9 @@ class HomeFragment : Fragment() {
     ): View {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
 
-// Initialize RecyclerView
+        // Initialize RecyclerView
         rvpopular = binding.rvPopular
-//        rvpopular.setHasFixedSize(true)
+        rvpopular.setHasFixedSize(true)
 
         // Set up RecyclerView layout manager
         val layoutManager = GridLayoutManager(requireContext(), 2)
@@ -42,7 +44,16 @@ class HomeFragment : Fragment() {
 
         // Set up RecyclerView adapter
         val listPopular = ArrayList<Popular>()
-        popularAdapter = PopularAdapter(listPopular)
+        popularAdapter = PopularAdapter(listPopular).apply {
+            setOnItemClickListener(object : PopularAdapter.OnItemClickListener {
+                override fun onItemClick(id: Int,name: String, photoUrlBig: String ) {
+                    // Handle item click, e.g., navigate to SongFragment
+                    navigateToSongFragment(id, name,photoUrlBig)
+                }
+            })
+        }
+
+
         rvpopular.adapter = popularAdapter
 
         // Fetch data from API and update the adapter
@@ -54,7 +65,7 @@ class HomeFragment : Fragment() {
 
     private fun fetchDataFromApi() {
         val apiService = ApiConfig.getApiService()
-        val call = apiService.getTop50Artist()
+        val call = apiService.getTop10Artist()
 
         call.enqueue(object : Callback<ApiResponse> {
             override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
@@ -64,7 +75,12 @@ class HomeFragment : Fragment() {
                         val listPopular = it.data?.map { dataItem ->
                             Log.d("DataItem", "Name: ${dataItem?.name}")
 
-                            Popular(dataItem?.name.orEmpty(), getImageResourceId(dataItem?.pictureBig))
+                            Popular(
+                                dataItem?.id ?: 0,
+                                dataItem?.name.orEmpty(),
+                                getImageResourceId(dataItem?.pictureMedium),
+                                getImageResourceId(dataItem?.pictureBig),
+                            )
                         } ?: emptyList()
                         updateAdapter(listPopular)
                     }
@@ -93,5 +109,19 @@ class HomeFragment : Fragment() {
         // For simplicity, just return the URL
         return url ?: ""
     }
+
+    private fun navigateToSongFragment(id: Int, name: String, photoUrlBig: String) {
+
+        // Create a bundle to pass data to SongFragment
+        val bundle = Bundle().apply {
+            putInt("artistId", id)
+            putString("photoUrlBig", photoUrlBig)
+            putString("name", name)
+        }
+
+        // Use NavController to navigate to SongFragment
+        findNavController().navigate(R.id.navigation_song, bundle)
+    }
+
 
 }

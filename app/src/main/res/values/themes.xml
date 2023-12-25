@@ -5,4 +5,10 @@
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
     </style>
     <style name="Theme.Spotify" parent="Base.Theme.Spotify" />
+
+    <style name="roundImageView" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">12dp</item>
+        <item name="color">@color/white</item>
+    </style>
 </resources>

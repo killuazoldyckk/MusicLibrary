@@ -53,3 +53,4 @@ data class DataItem(
 	@field:SerializedName("radio")
 	val radio: Boolean? = null
 ) : Parcelable
+

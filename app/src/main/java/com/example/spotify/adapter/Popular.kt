@@ -5,6 +5,8 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class Popular(
+    val id: Int,
     val name: String,
-    val photoUrl: String
+    val photoUrlMedium: String,
+    val photoUrlBig: String
 ) : Parcelable

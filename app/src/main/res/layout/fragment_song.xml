@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".ui.home.SongFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#00465c">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/imageView2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                app:shapeAppearanceOverlay="@style/roundImageView"
+                tools:src="@tools:sample/avatars"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginTop="-20dp"/>
+
+            <TextView
+                android:id="@+id/singerName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Taylor Swift"
+                android:fontFamily="@font/inter_black"
+                android:textColor="#ffffff"
+                app:layout_constraintBottom_toBottomOf="@id/imageView2"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginStart="25dp"
+                android:textSize="50sp"/>
+
+            <ImageView
+                android:id="@+id/backButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/backbutton"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_margin="20dp"/>
+
+            <TextView
+                android:id="@+id/popularTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Popular"
+                android:fontFamily="@font/inter_black"
+                android:textColor="#ffffff"
+                app:layout_constraintTop_toTopOf="@id/playButton"
+                app:layout_constraintBottom_toBottomOf="@+id/playButton"
+                app:layout_constraintStart_toStartOf="@id/singerName"
+                android:textSize="30sp"
+                />
+
+            <ImageView
+                android:id="@+id/playButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/playbutton"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/imageView2"
+                android:layout_marginTop="10dp"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/song_rv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="75dp"
+                app:layout_constraintTop_toBottomOf="@id/playButton"
+                app:layout_constraintStart_toStartOf="@id/popularTV"
+                />
+
+            <ProgressBar
+                android:id="@+id/loadingProgressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="80dp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.498"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/song_rv" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </ScrollView>
+
+
+</FrameLayout>
