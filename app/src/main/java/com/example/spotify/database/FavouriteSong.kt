@@ -20,5 +20,5 @@ data class FavouriteSong(
     val contributors: String,
 
     @ColumnInfo(name = "favourite")
-    val favourite: Boolean
+    var favourite: Boolean
 )

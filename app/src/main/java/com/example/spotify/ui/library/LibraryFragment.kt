@@ -1,44 +1,53 @@
 package com.example.spotify.ui.library
 
+import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
-import com.example.spotify.database.FavouriteSong
-import com.example.spotify.databinding.ItemSongrvBinding
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.spotify.adapter.FavouriteSongAdapter
+//import com.example.spotify.adapter.FavouriteSongAdapter
+import com.example.spotify.databinding.FragmentLibraryBinding
+import com.example.spotify.helper.ViewModelFactory
+import com.example.spotify.repository.FavouriteSongRepository
 
-class FavouriteSongAdapter :
-    ListAdapter<FavouriteSong, FavouriteSongAdapter.FavouriteSongViewHolder>(DiffCallback()) {
+class LibraryFragment : Fragment() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FavouriteSongViewHolder {
-        val binding = ItemSongrvBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return FavouriteSongViewHolder(binding)
-    }
+    private lateinit var binding: FragmentLibraryBinding
+    private lateinit var viewModel: LibraryViewModel
+    private val favouriteSongAdapter = FavouriteSongAdapter()
+    private lateinit var viewModelFactory: ViewModelFactory
 
-    override fun onBindViewHolder(holder: FavouriteSongViewHolder, position: Int) {
-        val favouriteSong = getItem(position)
-        holder.bind(favouriteSong)
-    }
 
-    inner class FavouriteSongViewHolder(private val binding: ItemSongrvBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentLibraryBinding.inflate(inflater, container, false)
 
-        fun bind(favouriteSong: FavouriteSong) {
-            binding.apply {
-                // Bind your views here using favouriteSong data
-            }
+        val application = requireNotNull(this.activity).application
+        val repository = FavouriteSongRepository(application)
+
+        // Use the existing ViewModelFactory
+        viewModelFactory = ViewModelFactory.getInstance(requireNotNull(this.activity).application)
+        viewModel = ViewModelProvider(this, viewModelFactory).get(LibraryViewModel::class.java)
+
+        setupRecyclerView()
+
+        viewModel.getAllFavouriteSongs().observe(viewLifecycleOwner) { favouriteSongs ->
+            favouriteSongAdapter.setListFavouriteSong(favouriteSongs)
         }
+
+        return binding.root
     }
 
-    private class DiffCallback : DiffUtil.ItemCallback<FavouriteSong>() {
-        override fun areItemsTheSame(oldItem: FavouriteSong, newItem: FavouriteSong): Boolean {
-            return oldItem.id == newItem.id
-        }
-
-        override fun areContentsTheSame(oldItem: FavouriteSong, newItem: FavouriteSong): Boolean {
-            return oldItem == newItem
+    private fun setupRecyclerView() {
+        binding.rvFavourite.apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = favouriteSongAdapter
+            // Add any additional settings for your RecyclerView
         }
     }
 }
-

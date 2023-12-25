@@ -2,55 +2,67 @@ package com.example.spotify.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.spotify.R
 import com.example.spotify.database.FavouriteSong
 import com.example.spotify.databinding.ItemSongrvBinding
+import com.example.spotify.helper.FavouriteSongDiffCallback
 
-class FavouriteSongAdapter(private val listFavouriteSong: List<FavouriteSong>) :
-    RecyclerView.Adapter<FavouriteSongAdapter.FavouriteSongViewHolder>() {
+class FavouriteSongAdapter: RecyclerView.Adapter<FavouriteSongAdapter.FavouriteSongViewHolder>() {
+    private val listFavouriteSong = ArrayList<FavouriteSong>()
+
+    fun setListFavouriteSong(listFavouriteSong: List<FavouriteSong>){
+        val diffCallback = FavouriteSongDiffCallback(this.listFavouriteSong, listFavouriteSong)
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
+        this.listFavouriteSong.clear()
+        this.listFavouriteSong.addAll(listFavouriteSong)
+        diffResult.dispatchUpdatesTo(this)
+    }
 
     inner class FavouriteSongViewHolder(private val binding: ItemSongrvBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
+        private val listFavouriteSong = mutableListOf<FavouriteSong>()
+
+        fun setListFavouriteSong(listFavouriteSong: List<FavouriteSong>) {
+            this.listFavouriteSong.clear()
+            this.listFavouriteSong.addAll(listFavouriteSong)
+            notifyDataSetChanged()
+        }
+
         fun bind(favouriteSong: FavouriteSong) {
-            binding.apply {
-                // Set the data for each view using favouriteSong
-                Glide.with(root.context)
+            with(binding){
+                songName.text = favouriteSong.songName
+                contributorsName.text = favouriteSong.contributors
+
+                // Load album cover image using Glide
+                Glide.with(itemView)
                     .load(favouriteSong.albumCover)
                     .centerCrop()
                     .into(albumcover)
 
-                songName.text = favouriteSong.songName
-                contributorsName.text = favouriteSong.contributors
-
                 // Set the appropriate favorite icon based on the state
-                val favoriteIconResId =
-                    if (favouriteSong.favourite) R.drawable.love_acttive else R.drawable.love_inactive
+                val favoriteIconResId = R.drawable.love_acttive
                 favouritebtn.setImageResource(favoriteIconResId)
             }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FavouriteSongViewHolder {
-        val binding = ItemSongrvBinding.inflate(
-            LayoutInflater.from(parent.context),
-            parent,
-            false
-        )
+        val binding = ItemSongrvBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return FavouriteSongViewHolder(binding)
-    }
-
-    override fun onBindViewHolder(holder: FavouriteSongViewHolder, position: Int) {
-        val favouriteSong = listFavouriteSong[position]
-        holder.bind(favouriteSong)
     }
 
     override fun getItemCount(): Int {
         return listFavouriteSong.size
     }
 
-    // Other methods...
+    override fun onBindViewHolder(holder: FavouriteSongViewHolder, position: Int) {
+        holder.bind(listFavouriteSong[position])
+    }
+
 
 }

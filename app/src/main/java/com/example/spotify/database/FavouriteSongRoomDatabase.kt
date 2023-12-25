@@ -15,14 +15,27 @@ abstract class FavouriteSongRoomDatabase : RoomDatabase() {
         private var INSTANCE: FavouriteSongRoomDatabase? = null
 
         @JvmStatic
-        fun getDatabase(context: Context): FavouriteSongRoomDatabase {
-            return INSTANCE ?: synchronized(this) {
-                Room.databaseBuilder(
-                    context.applicationContext,
-                    FavouriteSongRoomDatabase::class.java, "favourite_database"
-                ).build().also {
-                    INSTANCE = it
+        fun getDatabase(context: Context):FavouriteSongRoomDatabase{
+            if(INSTANCE == null) {
+                synchronized(FavouriteSongRoomDatabase::class.java){
+                    INSTANCE = Room.databaseBuilder(context.applicationContext,
+                        FavouriteSongRoomDatabase::class.java, "favourite_song_database")
+                        .build()
                 }
+            }
+
+            return INSTANCE as FavouriteSongRoomDatabase
+        }
+
+        fun getInstance(context: Context): FavouriteSongRoomDatabase {
+            return INSTANCE ?: synchronized(this) {
+                val instance = Room.databaseBuilder(
+                    context.applicationContext,
+                    FavouriteSongRoomDatabase::class.java,
+                    "favourite_song_database"
+                ).build()
+                INSTANCE = instance
+                instance
             }
         }
     }

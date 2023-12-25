@@ -14,16 +14,19 @@ import com.bumptech.glide.Glide
 import com.example.spotify.adapter.Contributor
 import com.example.spotify.adapter.Song
 import com.example.spotify.adapter.SongAdapter
+import java.util.concurrent.ExecutorService
 import com.example.spotify.api.ApiConfig
 import com.example.spotify.api.ContributorsItem
 import com.example.spotify.api.TopSongsResponse
 import com.example.spotify.database.FavouriteSong
 import com.example.spotify.database.FavouriteSongDao
+import com.example.spotify.database.FavouriteSongRoomDatabase
 
 import com.example.spotify.databinding.FragmentSongBinding
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.concurrent.Executors
 
 
 class SongFragment : Fragment(),SongAdapter.OnFavoriteClickListener {
@@ -33,12 +36,21 @@ class SongFragment : Fragment(),SongAdapter.OnFavoriteClickListener {
     private lateinit var songAdapter: SongAdapter
     private lateinit var favouriteSongDao: FavouriteSongDao
     private val listSong = ArrayList<Song>()
+    private val executorService: ExecutorService = Executors.newSingleThreadExecutor()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        // Initialize favouriteSongDao here, you may obtain it from your Room database instance
+        favouriteSongDao = FavouriteSongRoomDatabase.getInstance(requireContext()).favouriteSongDao()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentSongBinding.inflate(inflater, container, false)
+
 
         // Retrieve arguments
         val artistName = arguments?.getString("name")?:""
@@ -113,10 +125,24 @@ class SongFragment : Fragment(),SongAdapter.OnFavoriteClickListener {
                                 name = dataItem?.artist?.name.orEmpty(),
                                 albumCover = dataItem?.album?.coverSmall.orEmpty(),
                                 songName = dataItem?.title.orEmpty(),
-                                contributors = mapContributors(dataItem?.contributors)
+                                contributors = mapContributors(dataItem?.contributors),
                             )
                         } ?: emptyList()
-                        updateAdapter(listSong)
+                        // Update the adapter on the main thread
+                        requireActivity().runOnUiThread {
+                            updateAdapter(listSong)
+                        }
+
+                        // Perform the database operation in the background thread
+                        executorService.execute {
+                            listSong.forEach { song ->
+                                song.isFavorite = isSongFavoriteLocally(song.songName)
+                            }
+                            // Update the adapter again on the main thread
+                            requireActivity().runOnUiThread {
+                                updateAdapter(listSong)
+                            }
+                        }
                     }
                 } else {
                     // Handle API error
@@ -134,6 +160,11 @@ class SongFragment : Fragment(),SongAdapter.OnFavoriteClickListener {
             }
         })
 
+    }
+
+    private fun isSongFavoriteLocally(songName: String): Boolean {
+        // Use FavouriteSongDao to check if the song is in the local favorites
+        return favouriteSongDao.isSongFavourite(songName) != null
     }
 
     private fun updateAdapter(listSong: List<Song>) {
@@ -171,7 +202,7 @@ class SongFragment : Fragment(),SongAdapter.OnFavoriteClickListener {
             favourite = song.isFavorite
         )
 
-        // Save to the FavouriteSong database using FavouriteSongDao
+//         Save to the FavouriteSong database using FavouriteSongDao
         saveToFavoriteDatabase(favouriteSong)
 
     }

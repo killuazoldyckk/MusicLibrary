@@ -34,4 +34,10 @@ class FavouriteSongRepository(application: Application) {
             favouriteSongDao.delete(favouriteSong)
         }
     }
+
+    fun update(favouriteSong: FavouriteSong) {
+        executorService.execute {
+            favouriteSongDao.update(favouriteSong)
+        }
+    }
 }
