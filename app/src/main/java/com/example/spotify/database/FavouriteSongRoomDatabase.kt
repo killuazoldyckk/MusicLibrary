@@ -26,17 +26,5 @@ abstract class FavouriteSongRoomDatabase : RoomDatabase() {
 
             return INSTANCE as FavouriteSongRoomDatabase
         }
-
-        fun getInstance(context: Context): FavouriteSongRoomDatabase {
-            return INSTANCE ?: synchronized(this) {
-                val instance = Room.databaseBuilder(
-                    context.applicationContext,
-                    FavouriteSongRoomDatabase::class.java,
-                    "favourite_song_database"
-                ).build()
-                INSTANCE = instance
-                instance
-            }
-        }
     }
 }

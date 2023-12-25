@@ -25,5 +25,8 @@ interface FavouriteSongDao {
     @Query("SELECT * FROM favourite_songs WHERE song_name = :songName LIMIT 1")
     fun isSongFavourite(songName: String): FavouriteSong?
 
+    @Query("DELETE FROM favourite_songs WHERE song_name = :songName")
+    fun deleteSong(songName: String)
+
 
 }

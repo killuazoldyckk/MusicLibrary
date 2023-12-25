@@ -10,7 +10,8 @@ import com.example.spotify.R
 import com.bumptech.glide.Glide
 import com.google.android.material.imageview.ShapeableImageView
 
-class SongAdapter(private var listSong: MutableList<Song>) : RecyclerView.Adapter<SongAdapter.SongViewHolder>() {
+class SongAdapter(private var listSong: ArrayList<Song> = ArrayList()
+) : RecyclerView.Adapter<SongAdapter.SongViewHolder>() {
 
     private var favoriteClickListener: OnFavoriteClickListener? = null
 
@@ -44,9 +45,7 @@ class SongAdapter(private var listSong: MutableList<Song>) : RecyclerView.Adapte
 
         // Handle favorite button click
         holder.favoriteImageView.setOnClickListener {
-            // Toggle the favorite state
-            song.isFavorite = !song.isFavorite
-            notifyItemChanged(position)
+            handleFavoriteButtonClick(position)
         }
 
         // Handle contributors
@@ -59,6 +58,24 @@ class SongAdapter(private var listSong: MutableList<Song>) : RecyclerView.Adapte
             contributors.joinToString { it.name }
         }
         holder.contributorsName.text = contributorsText
+
+    }
+
+    fun setFavoriteState(position: Int, isFavorite: Boolean) {
+        if (position >= 0 && position < listSong.size) {
+            listSong[position].isFavorite = isFavorite
+            notifyItemChanged(position)
+        }
+    }
+
+
+    private fun handleFavoriteButtonClick(position: Int) {
+        // Toggle the favorite state
+        listSong[position].isFavorite = !listSong[position].isFavorite
+        notifyItemChanged(position)
+
+        // Notify the listener if set
+        favoriteClickListener?.onFavoriteClick(position)
     }
 
 
@@ -67,6 +84,7 @@ class SongAdapter(private var listSong: MutableList<Song>) : RecyclerView.Adapte
     fun setData(newList: List<Song>) {
         listSong.clear()
         listSong.addAll(newList)
+        notifyDataSetChanged()
     }
 
     class SongViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -74,6 +92,6 @@ class SongAdapter(private var listSong: MutableList<Song>) : RecyclerView.Adapte
         val songName: TextView = itemView.findViewById(R.id.songName)
         val contributorsName: TextView = itemView.findViewById(R.id.contributors_name)
         val favoriteImageView: ImageView = itemView.findViewById(R.id.favouritebtn)
-        // Add other views as needed
+
     }
 }

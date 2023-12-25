@@ -8,16 +8,16 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.spotify.adapter.FavouriteSongAdapter
-//import com.example.spotify.adapter.FavouriteSongAdapter
+import com.example.spotify.database.FavouriteSong
 import com.example.spotify.databinding.FragmentLibraryBinding
 import com.example.spotify.helper.ViewModelFactory
 import com.example.spotify.repository.FavouriteSongRepository
 
-class LibraryFragment : Fragment() {
+class LibraryFragment : Fragment(),FavouriteSongAdapter.OnDeleteClickListener {
 
     private lateinit var binding: FragmentLibraryBinding
     private lateinit var viewModel: LibraryViewModel
-    private val favouriteSongAdapter = FavouriteSongAdapter()
+    private val favouriteSongAdapter = FavouriteSongAdapter(this)
     private lateinit var viewModelFactory: ViewModelFactory
 
 
@@ -40,7 +40,20 @@ class LibraryFragment : Fragment() {
             favouriteSongAdapter.setListFavouriteSong(favouriteSongs)
         }
 
+
+
         return binding.root
+    }
+
+    override fun onDeleteClick(favouriteSong: FavouriteSong) {
+        // Handle delete button click here
+        viewModel.deleteFavouriteSong(favouriteSong)
+        // Optionally, you can update the adapter here or observe changes in the ViewModel
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        viewModel.getAllFavouriteSongs().removeObservers(viewLifecycleOwner)
     }
 
     private fun setupRecyclerView() {
@@ -49,5 +62,7 @@ class LibraryFragment : Fragment() {
             adapter = favouriteSongAdapter
             // Add any additional settings for your RecyclerView
         }
+
     }
+
 }

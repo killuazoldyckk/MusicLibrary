@@ -3,7 +3,6 @@ package com.example.spotify.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.spotify.R
@@ -11,10 +10,16 @@ import com.example.spotify.database.FavouriteSong
 import com.example.spotify.databinding.ItemSongrvBinding
 import com.example.spotify.helper.FavouriteSongDiffCallback
 
-class FavouriteSongAdapter: RecyclerView.Adapter<FavouriteSongAdapter.FavouriteSongViewHolder>() {
+class FavouriteSongAdapter(private val onDeleteClickListener: OnDeleteClickListener) :
+    RecyclerView.Adapter<FavouriteSongAdapter.FavouriteSongViewHolder>() {
+
     private val listFavouriteSong = ArrayList<FavouriteSong>()
 
-    fun setListFavouriteSong(listFavouriteSong: List<FavouriteSong>){
+    interface OnDeleteClickListener {
+        fun onDeleteClick(favouriteSong: FavouriteSong)
+    }
+
+    fun setListFavouriteSong(listFavouriteSong: List<FavouriteSong>) {
         val diffCallback = FavouriteSongDiffCallback(this.listFavouriteSong, listFavouriteSong)
         val diffResult = DiffUtil.calculateDiff(diffCallback)
         this.listFavouriteSong.clear()
@@ -25,16 +30,8 @@ class FavouriteSongAdapter: RecyclerView.Adapter<FavouriteSongAdapter.FavouriteS
     inner class FavouriteSongViewHolder(private val binding: ItemSongrvBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        private val listFavouriteSong = mutableListOf<FavouriteSong>()
-
-        fun setListFavouriteSong(listFavouriteSong: List<FavouriteSong>) {
-            this.listFavouriteSong.clear()
-            this.listFavouriteSong.addAll(listFavouriteSong)
-            notifyDataSetChanged()
-        }
-
         fun bind(favouriteSong: FavouriteSong) {
-            with(binding){
+            with(binding) {
                 songName.text = favouriteSong.songName
                 contributorsName.text = favouriteSong.contributors
 
@@ -47,6 +44,11 @@ class FavouriteSongAdapter: RecyclerView.Adapter<FavouriteSongAdapter.FavouriteS
                 // Set the appropriate favorite icon based on the state
                 val favoriteIconResId = R.drawable.love_acttive
                 favouritebtn.setImageResource(favoriteIconResId)
+
+                // Handle delete button click
+                favouritebtn.setOnClickListener {
+                    onDeleteClickListener.onDeleteClick(favouriteSong)
+                }
             }
         }
     }
@@ -63,6 +65,4 @@ class FavouriteSongAdapter: RecyclerView.Adapter<FavouriteSongAdapter.FavouriteS
     override fun onBindViewHolder(holder: FavouriteSongViewHolder, position: Int) {
         holder.bind(listFavouriteSong[position])
     }
-
-
 }

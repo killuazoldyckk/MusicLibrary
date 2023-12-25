@@ -38,12 +38,18 @@ class SongFragment : Fragment(),SongAdapter.OnFavoriteClickListener {
     private val listSong = ArrayList<Song>()
     private val executorService: ExecutorService = Executors.newSingleThreadExecutor()
 
+    companion object {
+        const val PAYLOAD_FAVORITE_STATE = "PAYLOAD_FAVORITE_STATE"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         // Initialize favouriteSongDao here, you may obtain it from your Room database instance
-        favouriteSongDao = FavouriteSongRoomDatabase.getInstance(requireContext()).favouriteSongDao()
+        favouriteSongDao = FavouriteSongRoomDatabase.getDatabase(requireContext()).favouriteSongDao()
     }
+
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -72,14 +78,15 @@ class SongFragment : Fragment(),SongAdapter.OnFavoriteClickListener {
 
         // Set up RecyclerView adapter
         val listSong = ArrayList<Song>()
+
+        // Set up RecyclerView adapter
         songAdapter = SongAdapter(listSong).apply {
             setOnFavoriteClickListener(this@SongFragment)
         }
-        songAdapter = SongAdapter(listSong)
-
-        songRv.adapter = songAdapter
 
         fetchDataFromApi(artistId)
+
+        songRv.adapter = songAdapter
 
         binding.backButton.setOnClickListener{
             findNavController().navigateUp()
@@ -98,6 +105,8 @@ class SongFragment : Fragment(),SongAdapter.OnFavoriteClickListener {
     }
 
 
+
+
     // In the ImageView extension function
     private fun loadImage(url: String) {
         Glide.with(this)
@@ -105,8 +114,7 @@ class SongFragment : Fragment(),SongAdapter.OnFavoriteClickListener {
             .into(binding.imageView2)
     }
 
-    private fun fetchDataFromApi(id: Int){
-
+    private fun fetchDataFromApi(id: Int) {
         binding.loadingProgressBar.visibility = View.VISIBLE
 
         val apiService = ApiConfig.getApiService()
@@ -120,7 +128,7 @@ class SongFragment : Fragment(),SongAdapter.OnFavoriteClickListener {
                         val dataItems = it.data
 
                         // Map dataItems to Song list
-                        val listSong = dataItems?.map { dataItem ->
+                        val updatedListSong = dataItems?.map { dataItem ->
                             Song(
                                 name = dataItem?.artist?.name.orEmpty(),
                                 albumCover = dataItem?.album?.coverSmall.orEmpty(),
@@ -128,20 +136,25 @@ class SongFragment : Fragment(),SongAdapter.OnFavoriteClickListener {
                                 contributors = mapContributors(dataItem?.contributors),
                             )
                         } ?: emptyList()
+
                         // Update the adapter on the main thread
                         requireActivity().runOnUiThread {
-                            updateAdapter(listSong)
+                            updateAdapter(updatedListSong)
                         }
 
                         // Perform the database operation in the background thread
                         executorService.execute {
-                            listSong.forEach { song ->
+                            updatedListSong.forEach { song ->
                                 song.isFavorite = isSongFavoriteLocally(song.songName)
                             }
                             // Update the adapter again on the main thread
                             requireActivity().runOnUiThread {
-                                updateAdapter(listSong)
+                                updateAdapter(updatedListSong)
                             }
+
+                            // Update the outer listSong with the new data
+                            listSong.clear()
+                            listSong.addAll(updatedListSong)
                         }
                     }
                 } else {
@@ -150,16 +163,14 @@ class SongFragment : Fragment(),SongAdapter.OnFavoriteClickListener {
                 }
 
                 binding.loadingProgressBar.visibility = View.GONE
-
             }
+
             override fun onFailure(call: Call<TopSongsResponse>, t: Throwable) {
                 // Handle network failure
-                 Log.e("SongFragment", "Network call failed: ${t.message}")
+                Log.e("SongFragment", "Network call failed: ${t.message}")
                 binding.loadingProgressBar.visibility = View.GONE
-
             }
         })
-
     }
 
     private fun isSongFavoriteLocally(songName: String): Boolean {
@@ -174,6 +185,8 @@ class SongFragment : Fragment(),SongAdapter.OnFavoriteClickListener {
         songAdapter.notifyDataSetChanged()
     }
 
+
+
     private fun mapContributors(contributors: List<ContributorsItem?>?): List<Contributor> {
         return contributors?.mapNotNull { contributor ->
             Contributor(name = contributor?.name.orEmpty())
@@ -181,18 +194,54 @@ class SongFragment : Fragment(),SongAdapter.OnFavoriteClickListener {
     }
 
     override fun onFavoriteClick(position: Int) {
-        // Handle favorite button click here
-        val song = listSong[position]
-        song.isFavorite = !song.isFavorite
-        songAdapter.notifyItemChanged(position)
+        Log.d("SongFragment", "Favorite Clicked at position $position, List size: ${listSong.size}")
+        if (position >= 0 && position < listSong.size) {
+            // Handle favorite button click here
+            val song = listSong[position]
 
-        saveToFavoriteDatabase(song)
+            // Toggle the favorite state
+            song.isFavorite = !song.isFavorite
 
+            // Update the UI on the main thread
+            requireActivity().runOnUiThread {
+                // Notify the adapter about the change in the favorite state
+                songAdapter.setFavoriteState(position, song.isFavorite)
+                songAdapter.notifyItemChanged(position)
+            }
+
+            if (!song.isFavorite) {
+                // If the song is not marked as a favorite, save it to the database
+                saveToFavoriteDatabase(song)
+            } else {
+                songAdapter.setFavoriteState(position, false)
+                removeFromFavoriteDatabase(song)
+                // If the song is already marked as a favorite, you can handle any specific logic here
+                Log.d("SongFragment", "Song is already marked as a favorite")
+            }
+        } else {
+            Log.e("SongFragment", "Invalid position: $position")
+        }
     }
+
+    private fun removeFromFavoriteDatabase(song: Song) {
+        // Perform the database operation in the background using the ExecutorService
+        executorService.execute {
+            try {
+                // Delete the song from the FavouriteSong database using FavouriteSongDao
+                favouriteSongDao.deleteSong(song.songName)
+                Log.d("RemoveFromDatabase", "Successfully removed from the database")
+            } catch (e: Exception) {
+                Log.e("RemoveFromDatabase", "Error removing from the database: ${e.javaClass.simpleName} - ${e.message}")
+            }
+        }
+    }
+
 
     private fun saveToFavoriteDatabase(song: Song) {
         // Convert contributors List to a comma-separated string for simplicity
-        val contributors = song.contributors.joinToString(", ")
+        val contributors = song.contributors.map { it.name }.joinToString(", ")
+
+        Log.d("SaveToDatabase", "Contributors: $contributors")
 
         // Create a FavouriteSong entity
         val favouriteSong = FavouriteSong(
@@ -202,14 +251,17 @@ class SongFragment : Fragment(),SongAdapter.OnFavoriteClickListener {
             favourite = song.isFavorite
         )
 
-//         Save to the FavouriteSong database using FavouriteSongDao
-        saveToFavoriteDatabase(favouriteSong)
+        // Perform the database operation in the background using the ExecutorService
+        executorService.execute {
+            try {
+                // Save to the FavouriteSong database using FavouriteSongDao
+                favouriteSongDao.insert(favouriteSong)
+                Log.d("SaveToDatabase", "Successfully saved to the database")
+            } catch (e: Exception) {
+                Log.e("SaveToDatabase", "Error saving to the database: ${e.javaClass.simpleName} - ${e.message}")
+            }
+        }
 
-    }
-
-    private fun saveToFavoriteDatabase(favouriteSong: FavouriteSong) {
-        // Use favouriteSongDao to perform the insert operation
-        favouriteSongDao.insert(favouriteSong)
     }
 
 
