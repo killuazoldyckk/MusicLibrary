@@ -9,7 +9,9 @@ data class Song(
     val albumCover: String, // URL for the album cover image
     val songName: String, // Title of the song
     val contributors: List<Contributor>, // List of contributors
-    var isFavorite: Boolean = false
+    val preview: String, // URL for the track preview
+    var isFavorite: Boolean = false,
+    var isPlaying: Boolean = false // New property for play state
 ) : Parcelable
 
 @Parcelize

@@ -17,6 +17,16 @@
         tools:src="@tools:sample/avatars"
         />
 
+    <ImageView
+        android:id="@+id/playSong"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/albumcover"
+        app:layout_constraintBottom_toBottomOf="@id/albumcover"
+        android:src="@drawable/playbtn"/>
+
     <LinearLayout
         android:id="@+id/identitysong"
         android:layout_width="wrap_content"
